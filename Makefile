@@ -1,6 +1,11 @@
 # this Makefile depends on
 # scripts from https://github.com/jcosentino11/scripts
 
+# run the stack locally
+run-local:
+	@aws_login local
+	docker-compose up
+
 # login to aws-cli
 login-staging: logout
 	@aws_login meals-deploy-staging
