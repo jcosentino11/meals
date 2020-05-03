@@ -5,7 +5,6 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import lombok.extern.slf4j.Slf4j;
 import me.josephcosentino.meals.tables.RecipeTable;
 
-import java.net.Inet4Address;
 import java.util.Map;
 
 /**
