@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  meals-app
+
+Globals:
+  Function:
+    Runtime: java11
+    Handler: me.josephcosentino.meals.Handler::handleRequest
+
+Parameters:
+  DbEndpoint:
+    Type: String
+    Default: http://localhost:8000
+    Description: Local endpoint (scheme://host:port) for the database
+
+Resources:
+  RecipeTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: recipe_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: recipe_id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  CreateRecipeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/CreateRecipe
+      Timeout: 15
+      MemorySize: 512
+      Environment:
+        Variables:
+          db_localEndpoint: !Ref DbEndpoint
+          db_region: us-east-1
+      Events:
+        CreateRecipe:
+          Type: Api
+          Properties:
+            Path: /meals/api/v1/recipes
+            Method: POST
+
+Outputs:
+  CreateRecipeApi:
+    Description: "API Gateway endpoint URL for Prod stage for Create Recipe function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/meals/api/v1/recipes"
+  CreateRecipeFunctionArn:
+    Description: "Create Recipe Lambda Function ARN"
+    Value: !GetAtt CreateRecipeFunction.Arn
+  CreateRecipeFunctionIamRole:
+    Description: "Implicit IAM Role created for Create Recipe function"
+    Value: !GetAtt CreateRecipeFunctionRole.Arn

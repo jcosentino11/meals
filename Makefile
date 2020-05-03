@@ -1,27 +1,51 @@
 # this Makefile depends on
 # scripts from https://github.com/jcosentino11/scripts
 
-# run the stack locally
-run-local:
+DOCKER_NETWORK_NAME := meals-local
+DB_HOST_NAME := db
+DB_PORT := 8000
+LOCAL_TEMPLATE := template-local.yml
+GENERATED_TEMPLATE := .aws-sam/build/template.yaml
+DEBUG_PORT := 3001
+
+clean: db-kill network-kill
+
+run-local: clean network-create db
+	sam build \
+		--template $(LOCAL_TEMPLATE)
+	sam local start-api \
+		--debug \
+		--profile local \
+		--docker-network $(DOCKER_NETWORK_NAME) \
+		--parameter-overrides 'DbEndpoint=http://$(DB_HOST_NAME):$(DB_PORT)' \
+		--template $(GENERATED_TEMPLATE)
+
+debug-local: clean network-create db
+	sam build \
+		--template $(LOCAL_TEMPLATE)
+	sam local start-api \
+		--debug \
+		--debug-port $(DEBUG_PORT) \
+		--profile local \
+		--docker-network $(DOCKER_NETWORK_NAME) \
+		--parameter-overrides "DbEndpoint=http://$(DB_HOST_NAME):$(DB_PORT)" \
+		--template $(GENERATED_TEMPLATE)
+
+db: login-local
+	@./scripts/start_db.sh $(DOCKER_NETWORK_NAME) $(DB_HOST_NAME) $(DB_PORT)
+
+db-kill:
+	@./scripts/kill_db.sh
+
+network-create:
+	@docker network create $(DOCKER_NETWORK_NAME)
+
+network-kill:
+	@docker network rm $(DOCKER_NETWORK_NAME) || true
+
+login-local:
 	@aws_login local
-	docker-compose up
-
-# login to aws-cli
-login-staging: logout
-	@aws_login meals-deploy-staging
-
-login-production: logout
-	@aws_login meals-deploy-production
 
 # logout of aws-cli
 logout:
 	@aws_logout
-
-# apply all the cloudbyte infra
-apply-staging: login-staging
-	@with_terraform "cd infra/staging && terraform init && terraform get && terraform apply"
-
-# destroy all the cloudbyte infra
-destroy-staging: login-staging
-	@with_terraform "cd infra/staging && terraform init && terraform get && terraform destroy"
-
