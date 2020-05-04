@@ -28,7 +28,7 @@ debug-local: clean network-create db
 		--debug-port $(DEBUG_PORT) \
 		--profile local \
 		--docker-network $(DOCKER_NETWORK_NAME) \
-		--parameter-overrides "DbEndpoint=http://$(DB_HOST_NAME):$(DB_PORT)" \
+		--parameter-overrides 'DbEndpoint=http://$(DB_HOST_NAME):$(DB_PORT)' \
 		--template $(GENERATED_TEMPLATE)
 
 db: login-local
