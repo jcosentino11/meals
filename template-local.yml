@@ -15,20 +15,22 @@ Parameters:
     Description: Local endpoint (scheme://host:port) for the database
 
 Resources:
-  RecipeTable:
+  RecipesTable:
     Type: AWS::DynamoDB::Table
     Properties:
+      TableName: recipes-local
       AttributeDefinitions:
-        - AttributeName: recipe_id
+        - AttributeName: id
           AttributeType: S
       KeySchema:
-        - AttributeName: recipe_id
+        - AttributeName: id
           KeyType: HASH
+      BillingMode: PROVISIONED
       ProvisionedThroughput:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
 
-  CreateRecipeFunction:
+  RecipeHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: functions/CreateRecipe
@@ -36,22 +38,39 @@ Resources:
       MemorySize: 512
       Environment:
         Variables:
+          local: true
+          resource: recipe
           db_localEndpoint: !Ref DbEndpoint
           db_region: us-east-1
       Events:
+        GetRecipe:
+          Type: Api
+          Properties:
+            Path: /meals/api/v1/recipes/{id}
+            Method: GET
         CreateRecipe:
           Type: Api
           Properties:
             Path: /meals/api/v1/recipes
             Method: POST
+        UpdateRecipe:
+          Type: Api
+          Properties:
+            Path: /meals/api/v1/recipes/{id}
+            Method: PUT
+        DeleteRecipe:
+          Type: Api
+          Properties:
+            Path: /meals/api/v1/recipes/{id}
+            Method: DELETE
 
 Outputs:
-  CreateRecipeApi:
-    Description: "API Gateway endpoint URL for Prod stage for Create Recipe function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/meals/api/v1/recipes"
-  CreateRecipeFunctionArn:
-    Description: "Create Recipe Lambda Function ARN"
-    Value: !GetAtt CreateRecipeFunction.Arn
-  CreateRecipeFunctionIamRole:
-    Description: "Implicit IAM Role created for Create Recipe function"
-    Value: !GetAtt CreateRecipeFunctionRole.Arn
+  MealsApi:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/meals/api/v1"
+  RecipeHandlerFunctionArn:
+    Description: "Recipe Lambda Function ARN"
+    Value: !GetAtt RecipeHandlerFunction.Arn
+  RecipeHandlerFunctionIamRole:
+    Description: "Implicit IAM Role created for Recipe function"
+    Value: !GetAtt RecipeHandlerFunctionRole.Arn

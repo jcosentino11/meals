@@ -1,5 +1,6 @@
 package me.josephcosentino.meals.client;
 
+import lombok.extern.slf4j.Slf4j;
 import me.josephcosentino.meals.util.Environment;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
 import software.amazon.awssdk.regions.Region;
@@ -8,6 +9,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import java.net.URI;
 
 
+@Slf4j
 public class DynamoDb {
 
     public static final String DB_LOCAL_ENDPOINT_ENV = "db_localEndpoint";
@@ -25,13 +27,17 @@ public class DynamoDb {
     public static DynamoDbEnhancedAsyncClient newClientFromEnv() {
         final var builder = builder();
 
+        log.info("Creating new dynamodb client from env");
+
         final var localEndpoint = Environment.get(DB_LOCAL_ENDPOINT_ENV, null);
         if (localEndpoint != null) {
+            log.info("using local endpoint: {}", localEndpoint);
             builder.localEndpoint(localEndpoint);
         }
 
         final var region = Environment.get(DB_REGION_ENV, null);
         if (region != null) {
+            log.info("using region: {}", region);
             builder.region(region);
         }
 

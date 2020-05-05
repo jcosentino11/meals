@@ -6,11 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class Recipe {
+public class ErrorResponse {
 
-    private String id;
+    private String message;
 
 }
