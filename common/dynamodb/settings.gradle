@@ -1,0 +1,2 @@
+include ":rest-framework"
+project(":rest-framework").projectDir = file("../rest-framework")

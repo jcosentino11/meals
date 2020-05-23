@@ -1,4 +1,4 @@
-package me.josephcosentino.meals.util;
+package me.josephcosentino.meals.rest.mapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

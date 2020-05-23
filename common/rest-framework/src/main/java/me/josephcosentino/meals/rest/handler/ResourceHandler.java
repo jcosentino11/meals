@@ -1,8 +1,7 @@
-package me.josephcosentino.meals.handlers;
+package me.josephcosentino.meals.rest.handler;
 
 import lombok.SneakyThrows;
-import me.josephcosentino.meals.util.Jackson;
-import software.amazon.awssdk.enhanced.dynamodb.Key;
+import me.josephcosentino.meals.rest.mapper.Jackson;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -30,12 +29,6 @@ public interface ResourceHandler<T> {
     @SneakyThrows
     default T asResource(String jsonValue) {
         return Jackson.getObjectMapper().readValue(jsonValue, getSupportedResourceClass());
-    }
-
-    // TODO better place for these?
-
-    default Key keyFromId(String id) {
-        return Key.builder().partitionValue(id).build();
     }
 
     default String newRandomId() {

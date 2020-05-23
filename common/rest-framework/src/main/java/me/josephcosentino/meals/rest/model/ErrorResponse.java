@@ -1,4 +1,4 @@
-package me.josephcosentino.meals.model;
+package me.josephcosentino.meals.rest.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

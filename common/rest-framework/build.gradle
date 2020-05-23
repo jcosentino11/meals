@@ -2,16 +2,14 @@ plugins {
     id 'java'
 }
 
-apply plugin: 'idea'
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    // local
-    compile project(":rest-framework")
-    compile project(":dynamodb")
+    // jackson
+    compile 'com.fasterxml.jackson.core:jackson-core:2.10.3'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.10.3'
 
     // lombok
     compileOnly 'org.projectlombok:lombok:1.18.12'
@@ -21,9 +19,6 @@ dependencies {
 
     // logging
     implementation 'org.apache.logging.log4j:log4j-api:2.13.0'
-    implementation 'org.apache.logging.log4j:log4j-core:2.13.0'
-    runtimeOnly 'org.apache.logging.log4j:log4j-slf4j18-impl:2.13.0'
-    runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.1.1'
 
     // DI
     compile "com.google.dagger:dagger:2.27"
@@ -32,7 +27,7 @@ dependencies {
     // aws sdks
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
     implementation 'com.amazonaws:aws-lambda-java-events:3.1.0'
-    implementation 'software.amazon.awssdk:dynamodb-enhanced:2.13.8'
+    implementation 'software.amazon.awssdk:http-client-spi:2.13.22'
 
     // testing
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'

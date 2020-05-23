@@ -11,7 +11,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbParti
 @DynamoDbBean
 public class Recipe {
 
-    @Getter(onMethod_={ @DynamoDbPartitionKey})
+    @Getter(onMethod_ = {@DynamoDbPartitionKey})
     private String id;
     private String name;
 
