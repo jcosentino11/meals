@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'net.ltgt.apt-idea' version "0.21"
 }
 
 apply plugin: 'idea'
@@ -38,3 +39,13 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
 }
+
+task buildZip(type: Zip) {
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtime
+    }
+}
+
+build.dependsOn buildZip

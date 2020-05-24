@@ -7,7 +7,7 @@
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
+        <processorPath>
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.12/48e4e5d60309ebd833bc528dcf77668eab3cd72c/lombok-1.18.12.jar" />
         </processorPath>
         <module name="RecipeHandler.rest-framework.test" />
@@ -16,7 +16,7 @@
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
+        <processorPath>
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.12/48e4e5d60309ebd833bc528dcf77668eab3cd72c/lombok-1.18.12.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.dagger/dagger-compiler/2.27/437cb0485718e56eb94229fe419cae2ba5d8b0b4/dagger-compiler-2.27.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.dagger/dagger-spi/2.27/d719a523e5b4040f6522a8316eff018148442b42/dagger-spi-2.27.jar" />

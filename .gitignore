@@ -119,3 +119,4 @@ hs_err_pid*
 
 .db-container-id
 /functions/*/build/
+**/build
