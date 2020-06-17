@@ -1,0 +1,11 @@
+version: '3'
+services: 
+    db:
+        image: 'mongo'
+        container_name: 'mongo'
+        environment: 
+            - MONGO_INITDB_DATABASE=meals-local
+            - MONGO_INITDB_ROOT_USERNAME=user
+            - MONGO_INITDB_ROOT_PASSWORD=pass
+        ports:
+            - '27017-27019:27017-27019'
