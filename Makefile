@@ -16,5 +16,8 @@ init-modules:
 build-api: clean
 	$(GOENV) go build -o $(API_OUTPUT) $(API_CMD)
 
+build-api-image: clean
+	docker build -t meals-api .
+
 run-api:
 	$(GOENV) go run $(API_CMD)
