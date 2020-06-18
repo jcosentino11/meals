@@ -6,9 +6,5 @@ Work in Progress
 
 ### Run The API Locally
 ```
-make run-local
+make run-api
 ```
-This will stand up a:
-* docker network
-* local dynamodb
-* local api gateway
