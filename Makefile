@@ -10,6 +10,9 @@ GOENV := GOCACHE=$(GOCACHE)
 clean:
 	rm -rf $(BIN_DIR)
 
+init-modules:
+	$(GOENV) go mod init $(shell dirname $(API_CMD))
+
 build-api: clean
 	$(GOENV) go build -o $(API_OUTPUT) $(API_CMD)
 
