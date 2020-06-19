@@ -21,3 +21,6 @@ build-api-image: clean
 
 run-api:
 	$(GOENV) go run $(API_CMD)
+
+run-docker:
+	docker-compose up --build
