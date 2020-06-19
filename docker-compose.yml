@@ -10,7 +10,7 @@ services:
         ports:
             - '27017-27019:27017-27019'
     api:
-        build: .
+        build: ./backend
         ports:
             - '8080:8080'
         environment:

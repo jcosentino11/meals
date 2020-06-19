@@ -1,26 +1,19 @@
-
-BIN_DIR := ./bin
-
 API_CMD := cmd/meals-api/main.go
-API_OUTPUT = $(BIN_DIR)/meals-api
 
 GOCACHE := $(shell realpath ${HOME}/.cache) # makes sure path is normalized
 GOENV := GOCACHE=$(GOCACHE)
 
 clean:
-	rm -rf $(BIN_DIR)
-
-init-modules:
-	$(GOENV) go mod init $(shell dirname $(API_CMD))
+	cd backend && make clean
 
 build-api: clean
-	$(GOENV) go build -o $(API_OUTPUT) $(API_CMD)
+	cd backend && make build
 
 build-api-image: clean
-	docker build -t meals-api .
+	cd backend && make build-image
 
 run-api:
-	$(GOENV) go run $(API_CMD)
+	cd backend && make run
 
 run-docker:
 	docker-compose up --build

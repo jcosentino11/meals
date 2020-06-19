@@ -15,12 +15,12 @@ RUN go mod download
 
 COPY . .
 
-RUN make build-api
+RUN make build
 
 WORKDIR /dist
 
-RUN cp /build/bin/meals-api .
+RUN cp /build/bin/main .
 
 EXPOSE 8080
 
-CMD ["/dist/meals-api"]
+CMD ["/dist/main"]
