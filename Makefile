@@ -15,5 +15,5 @@ build-api-image: clean
 run-api:
 	cd backend && make run
 
-run-docker:
+docker:
 	docker-compose up --build

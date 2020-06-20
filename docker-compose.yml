@@ -20,3 +20,9 @@ services:
             - MONGO_PASSWORD=pass
         depends_on: 
             - db
+    web:
+        build : ./frontend
+        ports:
+            - '80:80'
+        depends_on: 
+            - api
