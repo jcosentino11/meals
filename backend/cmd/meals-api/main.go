@@ -38,7 +38,10 @@ func main() {
 	})
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.GET("/", hello)
+
+	g := e.Group("/api")
+	g.GET("/", hello)
+	
 	e.Logger.Fatal(e.Start(":8080"))
 }
 
