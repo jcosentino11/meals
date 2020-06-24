@@ -5,3 +5,6 @@ README.md
 
 build
 node_modules
+
+# Local Environment Variables
+.env
