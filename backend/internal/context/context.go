@@ -10,7 +10,7 @@ import (
 // MealsContext is simple wrapper around echo.Context
 // providing access to data layer, auth layer.
 type MealsContext struct {
-	Db    *mongo.BasicClient
+	Db    mongo.Client
 	Auth  *auth.FirebaseAuth
 	Token *firebaseAuth.Token
 	echo.Context

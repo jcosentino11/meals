@@ -3,8 +3,9 @@ package auth
 import (
 	"context"
 	"log"
+	"strings"
 
-	"firebase.google.com/go/v4"
+	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
 	"google.golang.org/api/option"
 )
@@ -19,19 +20,22 @@ type FirebaseAuth struct {
 func (f *FirebaseAuth) VerifyAuthToken(ctx context.Context, authToken string) (*auth.Token, error) {
 	token, err := f.auth.VerifyIDToken(ctx, authToken)
 	if err != nil {
-		log.Fatalf("error verifying ID token: %v\n", err)
+		log.Printf("error verifying ID token: %v\n", err)
 		return nil, err
 	}
 	return token, nil
 }
 
 // Firebase initializes connections to Firebase service
-func Firebase(credentialsFileName *string) (*FirebaseAuth, error) {
+func Firebase(credsPath *string) (*FirebaseAuth, error) {
 	ctx := context.Background()
 
 	var opts []option.ClientOption
-	if credentialsFileName != nil {
-		opts = append(opts, option.WithCredentialsFile(*credentialsFileName))
+	if credsPath != nil {
+		log.Printf("Initializing Firebase client with credentials from %s", *credsPath)
+		opts = append(opts, option.WithCredentialsFile(*credsPath))
+	} else {
+		log.Printf("Initialize Firebase with default google credentials")
 	}
 
 	// init firebase app
@@ -42,6 +46,10 @@ func Firebase(credentialsFileName *string) (*FirebaseAuth, error) {
 
 	// init firebase auth client
 	auth, err := app.Auth(ctx)
+
+	if err != nil {
+		return nil, err
+	}
 
 	return &FirebaseAuth{
 		app:  app,

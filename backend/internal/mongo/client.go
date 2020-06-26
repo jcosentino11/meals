@@ -10,8 +10,23 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-type dbClient interface {
-	GetNumDatabases() int
+// Client represents a mongo client implementation
+type Client interface {
+	GetNumDatabases() (int, error)
+}
+
+// NoopClient performs no actions. Useful for mocking, or local running
+type NoopClient struct {
+}
+
+// GetNumDatabases is a no-op
+func (n *NoopClient) GetNumDatabases() (int, error) {
+	return 0, nil
+}
+
+// NewNoopClient constructs a no-op client
+func NewNoopClient() (*NoopClient) {
+	return &NoopClient{}
 }
 
 // BasicClient is a mongo client wrapper using a simple interface

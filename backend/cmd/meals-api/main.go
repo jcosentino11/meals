@@ -15,21 +15,28 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-
 func main() {
 	conf := app.NewConfigFromEnv()
 
 	// establish db connection
-	db, err := mongo.NewBasicClient(conf.MongoConfig)
-	if err != nil {
-		log.Fatalf("Unable to establish db connection: %s", err)
-		os.Exit(1)
+	var db mongo.Client
+	if conf.MockDb {
+		log.Println("Using mock database")
+		db = mongo.NewNoopClient()
+	} else {
+		var err error
+		db, err = mongo.NewBasicClient(conf.MongoConfig)
+		if err != nil {
+			log.Fatalf("Unable to establish db connection: %s", err)
+			os.Exit(1)
+		}
 	}
 
 	// create auth client
 	var authClient *auth.FirebaseAuth
 	if conf.AuthEnabled {
-		authClient, err = auth.Firebase(nil)
+		var err error
+		authClient, err = auth.Firebase(conf.AuthFile)
 		if err != nil {
 			log.Fatalf("Unable to create auth client: %s", err)
 			os.Exit(1)
@@ -38,6 +45,10 @@ func main() {
 
 	// setup web server
 	e := echo.New()
+
+	// TODO restrict to personal domain
+	e.Use(middleware.CORS())
+
 	e.Use(mealsMiddleware.WrapContext(db, authClient))
 
 	if conf.AuthEnabled {
@@ -49,7 +60,7 @@ func main() {
 
 	g := e.Group("/api")
 	g.GET("/", hello)
-	
+
 	e.Logger.Fatal(e.Start(":8080"))
 }
 

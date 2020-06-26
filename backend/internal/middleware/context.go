@@ -8,7 +8,7 @@ import (
 )
 
 // WrapContext takes echo.Context and converts it to a MealsContext
-func WrapContext(db *mongo.BasicClient, auth *auth.FirebaseAuth) echo.MiddlewareFunc {
+func WrapContext(db mongo.Client, auth *auth.FirebaseAuth) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			cc := &context.MealsContext{

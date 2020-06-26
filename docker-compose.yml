@@ -19,6 +19,8 @@ services:
             - MONGO_USERNAME=user
             - MONGO_PASSWORD=pass
             - APP_FIREBASE_KEY_FILE=app-key.json
+        volumes: 
+            - ./backend/app-key.json:/dist/app-key.json
         depends_on: 
             - db
     web:

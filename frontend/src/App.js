@@ -3,12 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import * as firebase from "firebase/app";
 import "firebase/auth";
-import {
-  FirebaseAuthProvider,
-  FirebaseAuthConsumer,
-  IfFirebaseAuthed,
-  IfFirebaseAuthedAnd
-} from "@react-firebase/auth";
+import { FirebaseAuthProvider, IfFirebaseAuthed, } from "@react-firebase/auth";
 import { config } from "./config";
 
 
@@ -18,18 +13,46 @@ class App extends React.Component {
     msg: ""
   }
 
-  componentDidMount() {
-    fetch("/api/")
-      .then(res => res.text())
-      .then(data => {
-        this.setState({ msg: data })
+  helloWorldEndpoint() {
+    return config.backend.rootUrl + "/"
+  }
+
+  getUserToken = async () => {
+    return await firebase
+      .auth()
+      .currentUser
+      .getIdToken(true)
+      .catch(console.log);
+  }
+
+  getMessage = async () => {
+    const token = await this.getUserToken();
+    const headers = {
+      headers: new Headers({
+        'Authorization': 'Bearer ' + token
       })
-      .catch(console.log)
+    };
+
+    return await fetch(this.helloWorldEndpoint(), headers)
+      .then(res => res.text());
+  }
+
+  getAndSetMessage = async () => {
+    try {
+      const data = await this.getMessage();
+      this.setState({ msg: data });
+    } catch (err) {
+      console.log("Failed to get message: " + err);
+    }
+  }
+
+  clearState() {
+    this.setState({ msg: "" })
   }
 
   render() {
     return (
-      <FirebaseAuthProvider firebase={firebase} {...config}>
+      <FirebaseAuthProvider firebase={firebase} {...config.firebase}>
         <div className="App">
           <header className="App-header">
             <img src={logo} className="App-logo" alt="logo" />
@@ -37,53 +60,35 @@ class App extends React.Component {
               <button
                 onClick={() => {
                   const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
-                  firebase.auth().signInWithPopup(googleAuthProvider);
+                  firebase.auth().signInWithPopup(googleAuthProvider).then(result => {
+                    this.getAndSetMessage();
+                  });
                 }}
               >
                 Sign In with Google
               </button>
               <button
-                data-testid="signin-anon"
                 onClick={() => {
-                  firebase.auth().signInAnonymously();
-                }}
-              >
-                Sign In Anonymously
-              </button>
-              <button
-                onClick={() => {
-                  firebase.auth().signOut();
+                  firebase.auth().signOut().finally(() => {
+                    this.clearState()
+                  });
                 }}
               >
                 Sign Out
               </button>
-              <FirebaseAuthConsumer>
-                {({ isSignedIn, user, providerId }) => {
-                  return (
-                    <pre style={{ height: 300, overflow: "auto" }}>
-                      {JSON.stringify({ isSignedIn, user, providerId }, null, 2)}
-                    </pre>
-                  );
-                }}
-              </FirebaseAuthConsumer>
               <div>
                 <IfFirebaseAuthed>
                   {() => {
-                    return <div>You are authenticated</div>;
+                    return (
+                      <div>
+                        <div>You are authenticated</div>
+                        <div>Mesage from api: {this.state.msg}</div>
+                      </div>
+                    );
                   }}
                 </IfFirebaseAuthed>
-                <IfFirebaseAuthedAnd
-                  filter={({ providerId }) => providerId !== "anonymous"}
-                >
-                  {({ providerId }) => {
-                    return <div>You are authenticated with {providerId}</div>;
-                  }}
-                </IfFirebaseAuthedAnd>
               </div>
             </div>
-            <p>
-              Message from api: {this.state.msg}
-            </p>
           </header>
         </div>
       </FirebaseAuthProvider>
