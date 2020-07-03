@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/joho/godotenv"
@@ -59,7 +58,7 @@ func main() {
 			Enabled:       true,
 			SigningMethod: jwt.SigningMethodHS256,
 			KeyFunc: func(token *jwt.Token) (interface{}, error) {
-				return []byte(os.Getenv("AUTH_SECRET")), nil
+				return []byte(conf.AuthSecret), nil
 			}}),
 	)
 
