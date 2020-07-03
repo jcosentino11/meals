@@ -36,24 +36,6 @@ type MongoClient interface {
 	GetNumDatabases() (int, error)
 }
 
-// NoopClient performs no actions. Useful for mocking, or local running
-type NoopClient struct {
-}
-
-// GetNumDatabases is no-op
-func (n *NoopClient) GetNumDatabases() (int, error) {
-	return 0, nil
-}
-
-// Initialize is no-op
-func (n *NoopClient) Initialize() error {
-	return nil
-}
-
-// NewNoopMongoClient constructs a no-op client
-func NewNoopMongoClient() *NoopClient {
-	return &NoopClient{}
-}
 
 // BasicMongoClient is a mongo client wrapper using a simple interface
 type BasicMongoClient struct {
@@ -142,4 +124,25 @@ func (c *BasicMongoClient) GetNumDatabases() (int, error) {
 		return 0, err
 	}
 	return len(result.Databases), nil
+}
+
+
+// NoopClient performs no actions. Useful for mocking, or local running
+type NoopClient struct {
+}
+
+// NewNoopMongoClient constructs a no-op client
+func NewNoopMongoClient() *NoopClient {
+	return &NoopClient{}
+}
+
+// Initialize is no-op
+func (n *NoopClient) Initialize() error {
+	return nil
+}
+
+
+// GetNumDatabases is no-op
+func (n *NoopClient) GetNumDatabases() (int, error) {
+	return 0, nil
 }
