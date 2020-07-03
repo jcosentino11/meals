@@ -58,6 +58,7 @@ func main() {
 			Enabled:       true,
 			SigningMethod: jwt.SigningMethodHS256,
 			KeyFunc: func(token *jwt.Token) (interface{}, error) {
+				// TODO https://auth0.com/docs/quickstart/backend/golang
 				return []byte(conf.AuthSecret), nil
 			}}),
 	)
