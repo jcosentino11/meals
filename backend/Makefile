@@ -1,7 +1,7 @@
 
 BIN_DIR := ./bin
 
-API_CMD := cmd/meals-api/main.go
+API_CMD := main.go
 
 GOCACHE := $(shell realpath ${HOME}/.cache) # makes sure path is normalized
 GOENV := GOCACHE=$(GOCACHE)
