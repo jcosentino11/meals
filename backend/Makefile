@@ -9,6 +9,9 @@ GOENV := GOCACHE=$(GOCACHE)
 clean:
 	rm -rf $(BIN_DIR)
 
+go-clean:
+	$(GOENV) go clean -cache -modcache -i -r
+
 init-modules:
 	$(GOENV) go mod init $(shell dirname $(API_CMD))
 
@@ -19,4 +22,4 @@ build-image: clean
 	docker build -t meals-api .
 
 run:
-	$(GOENV) go run $(API_CMD)
+	$(GOENV) go run *.go

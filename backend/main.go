@@ -27,7 +27,6 @@ func main() {
 
 	conf := NewConfigFromEnv()
 
-	// establish db connection
 	db := NewMongoClient(MongoConfig{
 		MockDb:   conf.MockDb,
 		Hosts:    conf.MongoHosts,
@@ -39,7 +38,6 @@ func main() {
 		log.Fatalf("Unable to establish db connection: %s", err)
 	}
 
-	// setup web server
 	e := echo.New()
 
 	// TODO restrict to personal domain
@@ -50,23 +48,24 @@ func main() {
 			Db:      db,
 			Context: ctx,
 		}
-	}),
-	)
-
-	e.Use(NewJwtMiddleware(
-		JwtMiddlewareOptions{
-			Enabled:       true,
-			SigningMethod: jwt.SigningMethodHS256,
-			KeyFunc: func(token *jwt.Token) (interface{}, error) {
-				// TODO https://auth0.com/docs/quickstart/backend/golang
-				return []byte(conf.AuthSecret), nil
-			}}),
-	)
+	}))
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	jwtMiddleware := NewJwtMiddleware(
+		JwtMiddlewareOptions{
+			Enabled:       true,
+			SigningMethod: jwt.SigningMethodRS256,
+			KeyFunc: NewAuth0KeyGetter(Auth0KeyGetterOptions{
+				ExpectedAudience: "http://localhost:8080",                                    // TODO make configurable
+				ExpectedIssuer:   "https://meals-staging.us.auth0.com/",                      // TODO make configurable
+				JwksEndpoint:     "https://meals-staging.us.auth0.com/.well-known/jwks.json", // TODO make configurable
+			}).GetValidationKey,
+		})
+
 	g := e.Group("/api")
+	g.Use(jwtMiddleware)
 	g.GET("/", RouteHelloWorld)
 
 	e.Logger.Fatal(e.Start(":8080"))

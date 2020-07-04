@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
+	jwks "github.com/hkra/go-jwks"
 )
 
 // Jwt provides token verification capabilities
@@ -51,3 +52,75 @@ func (j *Jwt) VerifySigningMethod(token *jwt.Token) error {
 	}
 	return nil
 }
+
+// Auth0KeyGetter is used to retrieve public key from Auth0 service
+type Auth0KeyGetter struct {
+	Options Auth0KeyGetterOptions
+	JwksClient *jwks.Client
+}
+
+// Auth0KeyGetterOptions is used to configure Auth0KeyGetter
+type Auth0KeyGetterOptions struct {
+	ExpectedAudience string
+	ExpectedIssuer string
+	JwksEndpoint string
+}
+
+// NewAuth0KeyGetter creates a new Auth0KeyGetter
+func NewAuth0KeyGetter(options Auth0KeyGetterOptions) *Auth0KeyGetter {
+	return &Auth0KeyGetter{
+		Options: options,
+		JwksClient: jwks.NewClient(options.JwksEndpoint, jwks.NewConfig()),
+	}
+}
+
+// GetValidationKey retrives a public key used to validate a JWT token
+func (f *Auth0KeyGetter) GetValidationKey(token *jwt.Token) (interface{}, error) {
+	if !f.validateAudience(token) {
+		return token, errors.New("Invalid audience")
+	}
+
+	if !f.validateIssuer(token) {
+		return token, errors.New("Invalid issuer")
+	}
+
+	cert, err := f.downloadKeyCert(token)
+
+	if err != nil {
+		return token, err
+	}
+
+	key, err := jwt.ParseRSAPublicKeyFromPEM([]byte(cert))
+
+	if err != nil {
+		return token, err
+	}
+
+	return key, nil
+}
+
+func (f *Auth0KeyGetter) validateAudience(token *jwt.Token) bool {
+	return token.Claims.(jwt.MapClaims).VerifyAudience(f.Options.ExpectedAudience, false)
+}
+
+func (f *Auth0KeyGetter) validateIssuer(token *jwt.Token) bool {
+	return token.Claims.(jwt.MapClaims).VerifyIssuer(f.Options.ExpectedIssuer, false)
+}
+
+func (f *Auth0KeyGetter) downloadKeyCert(token *jwt.Token) (string, error)  {
+	kid := token.Header["kid"].(string)
+	key, err := f.JwksClient.GetSigningKey(kid)
+
+	if err != nil {
+		return "", err
+	}
+
+	if key == nil {
+		return "", errors.New("Unable to find appropriate key")
+	}
+
+	cert := "-----BEGIN CERTIFICATE-----\n" + key.X5c[0] + "\n-----END CERTIFICATE-----"
+
+	return cert, nil
+}
+
