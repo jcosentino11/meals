@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
-	jwks "github.com/hkra/go-jwks"
+	jwks "github.com/jcosentino11/go-jwks"
 )
 
 // Jwt provides token verification capabilities
