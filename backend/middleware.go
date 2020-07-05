@@ -37,6 +37,7 @@ func NewJwtMiddleware(options JwtMiddlewareOptions) echo.MiddlewareFunc {
 	jwt := &Jwt{
 		SigningMethod:    options.SigningMethod,
 		ExpectedAudience: options.ExpectedAudience,
+		ExpectedIssuer:   options.ExpectedIssuer,
 		JwksEndpoint:     options.JwksEndpoint,
 	}
 	jwt.Initialize()
