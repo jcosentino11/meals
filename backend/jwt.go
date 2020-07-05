@@ -11,17 +11,26 @@ import (
 
 // Jwt provides token verification capabilities
 type Jwt struct {
-	SigningMethod    jwt.SigningMethod
+	signingMethod jwt.SigningMethod
+	expectedAudience string
+	expectedIssuer   string
+	jwksClient       *jwks.Client
+}
+
+// JwtConfig holds config options for Jwt
+type JwtConfig struct {
 	ExpectedAudience string
 	ExpectedIssuer   string
 	JwksEndpoint     string
-	JwksClient       *jwks.Client
 }
 
-// Initialize creates resources needed for jwt verification
-func (j *Jwt) Initialize() {
-	if j.JwksClient == nil {
-		j.JwksClient = jwks.NewClient(j.JwksEndpoint, jwks.NewConfig())
+// NewJwt creates and initializes a new jwt verifier
+func NewJwt(config JwtConfig) *Jwt {
+	return &Jwt{
+		signingMethod: jwt.SigningMethodRS256,
+		expectedAudience: config.ExpectedAudience,
+		expectedIssuer: config.ExpectedIssuer,
+		jwksClient: jwks.NewClient(config.JwksEndpoint, jwks.NewConfig()),
 	}
 }
 
@@ -95,7 +104,7 @@ func (j *Jwt) downloadValidationKey(token *jwt.Token) (interface{}, error) {
 
 func (j *Jwt) downloadKeyCert(token *jwt.Token) (string, error) {
 	kid := token.Header["kid"].(string)
-	key, err := j.JwksClient.GetSigningKey(kid)
+	key, err := j.jwksClient.GetSigningKey(kid)
 
 	if err != nil {
 		return "", err
@@ -111,16 +120,16 @@ func (j *Jwt) downloadKeyCert(token *jwt.Token) (string, error) {
 }
 
 func (j *Jwt) validateSigningMethod(token *jwt.Token) error {
-	if j.SigningMethod != nil && j.SigningMethod.Alg() != token.Header["alg"] {
+	if j.signingMethod != nil && j.signingMethod.Alg() != token.Header["alg"] {
 		return errors.New("Invalid signing method")
 	}
 	return nil
 }
 
 func (j *Jwt) validateAudience(token *jwt.Token) bool {
-	return token.Claims.(jwt.MapClaims).VerifyAudience(j.ExpectedAudience, false)
+	return token.Claims.(jwt.MapClaims).VerifyAudience(j.expectedAudience, false)
 }
 
 func (j *Jwt) validateIssuer(token *jwt.Token) bool {
-	return token.Claims.(jwt.MapClaims).VerifyIssuer(j.ExpectedIssuer, false)
+	return token.Claims.(jwt.MapClaims).VerifyIssuer(j.expectedIssuer, false)
 }

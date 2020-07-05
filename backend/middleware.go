@@ -5,8 +5,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-
-	"github.com/dgrijalva/jwt-go"
 )
 
 var (
@@ -26,7 +24,6 @@ func NewWrapContextMiddleware(ctx func(echo.Context) echo.Context) echo.Middlewa
 // JwtMiddlewareOptions define options for jwt middleware
 type JwtMiddlewareOptions struct {
 	Enabled          bool
-	SigningMethod    jwt.SigningMethod
 	ExpectedAudience string
 	ExpectedIssuer   string
 	JwksEndpoint     string
@@ -34,13 +31,11 @@ type JwtMiddlewareOptions struct {
 
 // NewJwtMiddleware create new jwt token auth middleware
 func NewJwtMiddleware(options JwtMiddlewareOptions) echo.MiddlewareFunc {
-	jwt := &Jwt{
-		SigningMethod:    options.SigningMethod,
+	jwt := NewJwt(JwtConfig{
 		ExpectedAudience: options.ExpectedAudience,
 		ExpectedIssuer:   options.ExpectedIssuer,
 		JwksEndpoint:     options.JwksEndpoint,
-	}
-	jwt.Initialize()
+	})
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			if options.Enabled {

@@ -50,8 +50,7 @@ func main() {
 
 	jwtMiddleware := NewJwtMiddleware(
 		JwtMiddlewareOptions{
-			Enabled:       true,
-			SigningMethod: jwt.SigningMethodRS256,
+			Enabled:          true,
 			ExpectedAudience: "http://localhost:8080",                                    // TODO make configurable
 			ExpectedIssuer:   "https://meals-staging.us.auth0.com/",                      // TODO make configurable
 			JwksEndpoint:     "https://meals-staging.us.auth0.com/.well-known/jwks.json", // TODO make configurable,
