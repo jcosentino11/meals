@@ -1,8 +1,10 @@
 package main
 
 import (
-	"github.com/labstack/echo/v4"
+	"log"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -40,6 +42,7 @@ func NewJwtMiddleware(options JwtMiddlewareOptions) echo.MiddlewareFunc {
 				parsedToken, err := jwt.ParseTokenFromRequest(c.Request())
 
 				if err != nil {
+					log.Printf("auth error: %s", err)
 					return ErrUnauthorized
 				}
 

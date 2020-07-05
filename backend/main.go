@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/joho/godotenv"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -20,11 +20,6 @@ type Context struct {
 }
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	conf := NewConfigFromEnv()
 
 	db := NewMongoClient(MongoConfig{
@@ -34,7 +29,7 @@ func main() {
 		Username: conf.MongoUsername,
 		Password: conf.MongoPassword,
 	})
-	if db.Initialize() != nil {
+	if err := db.Initialize(); err != nil {
 		log.Fatalf("Unable to establish db connection: %s", err)
 	}
 
@@ -66,7 +61,7 @@ func main() {
 
 	g := e.Group("/api")
 	g.Use(jwtMiddleware)
-	g.GET("/", RouteHelloWorld)
+	g.GET("/hello", RouteHelloWorld)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

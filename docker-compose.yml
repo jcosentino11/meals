@@ -7,6 +7,8 @@ services:
             - MONGO_INITDB_DATABASE=meals-local
             - MONGO_INITDB_ROOT_USERNAME=user
             - MONGO_INITDB_ROOT_PASSWORD=pass
+        env_file: 
+            - ./backend/.env
         ports:
             - '27017-27019:27017-27019'
     api:

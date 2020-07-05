@@ -1,8 +1,11 @@
 package main
 
 import (
+	"log"
 	"os"
 	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 const (
@@ -54,6 +57,7 @@ type Config struct {
 
 // NewConfigFromEnv creates a new Config from environment variables
 func NewConfigFromEnv() Config {
+	loadEnvFile()
 	return Config{
 		AuthEnabled:   GetenvBool(EnvAuthEnabled, EnvAuthEnabledDefault),
 		MockDb:        GetenvBool(EnvMockDb, EnvMockDbDefault),
@@ -62,6 +66,13 @@ func NewConfigFromEnv() Config {
 		MongoUsername: Getenv(EnvMongoUsername, EnvMongoUsernameDefault),
 		MongoPassword: Getenv(EnvMongoPassword, EnvMongoPasswordDefault),
 		AuthSecret:    Getenv(EnvAuthSecret, ""),
+	}
+}
+
+func loadEnvFile() {
+	err := godotenv.Load()
+	if err == nil {
+		log.Print("Loaded vars from .env")
 	}
 }
 

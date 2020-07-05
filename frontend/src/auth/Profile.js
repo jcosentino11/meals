@@ -5,53 +5,61 @@ import { useAuth0 } from '@auth0/auth0-react';
 const Profile = () => {
 
     const { user, isAuthenticated, getAccessTokenSilently  } = useAuth0();
-    const [userMetadata, setUserMetadata] = useState(null);
+    const [msg, setMessage] = useState(null);
 
     useEffect(() => {
-        const getUserMetadata = async () => {
-            const domain = config.auth0.domain;
-
+        (async () => {
             try {
+
+                if (!isAuthenticated) {
+                    console.log("not authenticated yet");
+                    return;
+                }
+
+                console.log("getting access token...")
+
                 const accessToken = await getAccessTokenSilently({
-                    audience: `https://${domain}/api/v2`,
-                    scope: "read:current_user",
+                    audience: config.auth0.audience,
+                    scope: config.auth0.scope,
                 });
 
-                const userDetailsByIdUrl = `https://${domain}/api/v2/users/${user.sub}`;
+                const getMessageUrl = `${config.backend.rootUrl}/hello`;
 
-                const metadataResponse = await fetch(userDetailsByIdUrl, {
+                console.log(`sending request to ${getMessageUrl}`)
+
+                const resp = await fetch(getMessageUrl, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     }
                 });
 
-                const { user_metadata } = await metadataResponse.json();
+                console.log(`response status: ${resp.status}, content: ${resp.body}`)
+
+                const { msg } = await resp.json();
                 
-                setUserMetadata(user_metadata);
+                setMessage(msg);
             } catch (e) {
                 console.log(e.message);
             }
-        };
-
-        getUserMetadata();
-    }, []);
+        })();
+    }, [getAccessTokenSilently]);
 
     return (
-        isAuthenticated && (
-            <div>
-                <img src={user.picture} alt={user.name} />
-                <h2>{user.name}</h2>
-                <p>{user.email}</p>
-                <h3>User Metadata</h3>
-                {
-                    userMetadata ? (
-                        <pre>{JSON.stringify(userMetadata, null, 2)}</pre>
-                    ): (
-                        "No user metadata defined"
-                    )
-                }
-            </div>
-        )
+        isAuthenticated ? (
+            msg ? (
+                <div>
+                    <img src={user.picture} alt={user.name} />
+                    <h2>{user.name}</h2>
+                    <p>{user.email}</p>
+                    <h3>Response from API</h3>
+                    <pre>{msg}</pre>
+                </div>
+            ) : (
+                <div>
+                    "No message found"
+                </div>
+            )
+        ) : (null)
     );
 };
 
