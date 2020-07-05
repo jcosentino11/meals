@@ -7,6 +7,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// HelloWorldResponse is a test. Kindly move along...
+type HelloWorldResponse struct {
+	Message string `json:"message"`
+}
+
 // RouteHelloWorld is a test. Kindly move along...
 func RouteHelloWorld(c echo.Context) error {
 	cc := c.(*Context)
@@ -14,5 +19,10 @@ func RouteHelloWorld(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return cc.String(http.StatusOK, fmt.Sprintf("Hello, World! Found %d databases.", numDatabases))
+
+	resp := &HelloWorldResponse{
+		Message: fmt.Sprintf("Hello, World! Found %d databases.", numDatabases),
+	}
+
+	return cc.JSON(http.StatusOK, resp)
 }
