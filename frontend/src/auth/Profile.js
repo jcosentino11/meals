@@ -33,10 +33,8 @@ const Profile = () => {
                     }
                 });
 
-                console.log(`response status: ${resp.status}, content: ${resp.body}`)
-
-                const { msg } = await resp.json();
-                
+                const msg = await resp.json();
+                console.log(msg)
                 setMessage(msg);
             } catch (e) {
                 console.log(e.message);
@@ -52,7 +50,7 @@ const Profile = () => {
                     <h2>{user.name}</h2>
                     <p>{user.email}</p>
                     <h3>Response from API</h3>
-                    <pre>{msg}</pre>
+                    <pre>{JSON.stringify(msg, null, 2)}</pre>
                 </div>
             ) : (
                 <div>
