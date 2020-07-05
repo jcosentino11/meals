@@ -52,11 +52,9 @@ func main() {
 		JwtMiddlewareOptions{
 			Enabled:       true,
 			SigningMethod: jwt.SigningMethodRS256,
-			KeyFunc: NewAuth0KeyGetter(Auth0KeyGetterOptions{
-				ExpectedAudience: "http://localhost:8080",                                    // TODO make configurable
-				ExpectedIssuer:   "https://meals-staging.us.auth0.com/",                      // TODO make configurable
-				JwksEndpoint:     "https://meals-staging.us.auth0.com/.well-known/jwks.json", // TODO make configurable
-			}).GetValidationKey,
+			ExpectedAudience: "http://localhost:8080",                                    // TODO make configurable
+			ExpectedIssuer:   "https://meals-staging.us.auth0.com/",                      // TODO make configurable
+			JwksEndpoint:     "https://meals-staging.us.auth0.com/.well-known/jwks.json", // TODO make configurable,
 		})
 
 	g := e.Group("/api")

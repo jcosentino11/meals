@@ -25,32 +25,27 @@ func NewWrapContextMiddleware(ctx func(echo.Context) echo.Context) echo.Middlewa
 
 // JwtMiddlewareOptions define options for jwt middleware
 type JwtMiddlewareOptions struct {
-	Enabled       bool
-	KeyFunc       jwt.Keyfunc
-	SigningMethod jwt.SigningMethod
+	Enabled          bool
+	SigningMethod    jwt.SigningMethod
+	ExpectedAudience string
+	ExpectedIssuer   string
+	JwksEndpoint     string
 }
 
 // NewJwtMiddleware create new jwt token auth middleware
 func NewJwtMiddleware(options JwtMiddlewareOptions) echo.MiddlewareFunc {
 	jwt := &Jwt{
-		KeyFunc:       options.KeyFunc,
-		SigningMethod: options.SigningMethod,
+		SigningMethod:    options.SigningMethod,
+		ExpectedAudience: options.ExpectedAudience,
+		JwksEndpoint:     options.JwksEndpoint,
 	}
+	jwt.Initialize()
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			if options.Enabled {
 				parsedToken, err := jwt.ParseTokenFromRequest(c.Request())
-
 				if err != nil {
 					log.Printf("auth error: %s", err)
-					return ErrUnauthorized
-				}
-
-				if jwt.VerifySigningMethod(parsedToken) != nil {
-					return ErrUnauthorized
-				}
-
-				if !parsedToken.Valid {
 					return ErrUnauthorized
 				}
 
