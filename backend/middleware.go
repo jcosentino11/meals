@@ -23,18 +23,18 @@ func NewWrapContextMiddleware(ctx func(echo.Context) echo.Context) echo.Middlewa
 
 // JwtMiddlewareOptions define options for jwt middleware
 type JwtMiddlewareOptions struct {
-	Enabled          bool
-	ExpectedAudience string
-	ExpectedIssuer   string
-	JwksEndpoint     string
+	Enabled      bool
+	Audience     string
+	Issuer       string
+	JwksEndpoint string
 }
 
 // NewJwtMiddleware create new jwt token auth middleware
 func NewJwtMiddleware(options JwtMiddlewareOptions) echo.MiddlewareFunc {
 	jwt := NewJwt(JwtConfig{
-		ExpectedAudience: options.ExpectedAudience,
-		ExpectedIssuer:   options.ExpectedIssuer,
-		JwksEndpoint:     options.JwksEndpoint,
+		Audience:     options.Audience,
+		Issuer:       options.Issuer,
+		JwksEndpoint: options.JwksEndpoint,
 	})
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {

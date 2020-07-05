@@ -12,25 +12,25 @@ import (
 // Jwt provides token verification capabilities
 type Jwt struct {
 	signingMethod jwt.SigningMethod
-	expectedAudience string
-	expectedIssuer   string
-	jwksClient       *jwks.Client
+	audience      string
+	issuer        string
+	jwksClient    *jwks.Client
 }
 
 // JwtConfig holds config options for Jwt
 type JwtConfig struct {
-	ExpectedAudience string
-	ExpectedIssuer   string
-	JwksEndpoint     string
+	Audience     string
+	Issuer       string
+	JwksEndpoint string
 }
 
 // NewJwt creates and initializes a new jwt verifier
 func NewJwt(config JwtConfig) *Jwt {
 	return &Jwt{
 		signingMethod: jwt.SigningMethodRS256,
-		expectedAudience: config.ExpectedAudience,
-		expectedIssuer: config.ExpectedIssuer,
-		jwksClient: jwks.NewClient(config.JwksEndpoint, jwks.NewConfig()),
+		audience:      config.Audience,
+		issuer:        config.Issuer,
+		jwksClient:    jwks.NewClient(config.JwksEndpoint, jwks.NewConfig()),
 	}
 }
 
@@ -127,9 +127,9 @@ func (j *Jwt) validateSigningMethod(token *jwt.Token) error {
 }
 
 func (j *Jwt) validateAudience(token *jwt.Token) bool {
-	return token.Claims.(jwt.MapClaims).VerifyAudience(j.expectedAudience, false)
+	return token.Claims.(jwt.MapClaims).VerifyAudience(j.audience, false)
 }
 
 func (j *Jwt) validateIssuer(token *jwt.Token) bool {
-	return token.Claims.(jwt.MapClaims).VerifyIssuer(j.expectedIssuer, false)
+	return token.Claims.(jwt.MapClaims).VerifyIssuer(j.issuer, false)
 }
