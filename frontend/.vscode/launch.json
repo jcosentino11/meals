@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug app (development mode)",
+            "type": "firefox",
+            "request": "attach",
+            "pathMappings": [{
+                "url": "http://localhost:3000",
+                // Refer to root repo folder as silly
+                // hack to get debugger to map source files
+                // properly
+                "path": "${workspaceFolder}/../"
+            }]
+        }
+    ]
+}
